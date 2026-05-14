@@ -629,9 +629,6 @@ function drawFishingAnim() {
 }
 
 
-// ============================================================
-//   特效系统 —— 全新：强染色 + 大粒子
-// ============================================================
 function triggerEffect(name, poemColor) {
     activeEffect = name;
     effectTimer = 400;
@@ -639,103 +636,119 @@ function triggerEffect(name, poemColor) {
     let pc = hexToRgb(poemColor);
     effectAccent = { r: pc.r, g: pc.g, b: pc.b };
 
-    // 每种特效都有强烈的全屏染色
+    //── 所有特效的染色都基于诗词本身颜色 ──
+    // 深色意象（月、星、梦、剑）→ 用诗词色的暗版做底
+    // 浅色意象（花、雪、风）→ 用诗词色的淡版做底
+    let darkTint = { r: pc.r * 0.15, g: pc.g * 0.15, b: pc.b * 0.15, a: 190 };
+    let midTint  = { r: pc.r * 0.4,  g: pc.g * 0.4,  b: pc.b * 0.4,  a: 130 };
+    let lightTint = { r: min(pc.r + 80, 255), g: min(pc.g + 80, 255), b: min(pc.b + 80, 255), a: 90 };
+
     switch (name) {
         case 'moon':
-            targetTint = { r: 15, g: 15, b: 40, a: 200 };
+            targetTint = darkTint;
             moonUp = 1;
             glowPulse = 80;
             break;
 
-        case 'flower':
-        case 'spring':
-            targetTint = { r: 255, g: 220, b: 220, a: 120 };
-            glowPulse = 50;
-            for (let i = 0; i < 80; i++)
-                addEffect(random(width), random(-120, -10), 'flower', 1);
-            break;
-
-        case 'rain':
-            targetTint = { r: 60, g: 80, b: 100, a: 160 };
-            umbrella = 1;
-            glowPulse = 30;
-            for (let i = 0; i < 150; i++)
-                addEffect(random(width), random(-height, 0), 'rain', 1);
-            break;
-
-        case 'snow':
-            targetTint = { r: 180, g: 195, b: 220, a: 100 };
-            glowPulse = 40;
-            for (let i = 0; i < 80; i++)
-                addEffect(random(width), random(-120, -10), 'snow', 1);
-            break;
-
-        case 'wind':
-            targetTint = { r: 200, g: 220, b: 230, a: 80 };
-            glowPulse = 35;
-            for (let i = 0; i < 60; i++)
-                addEffect(-50, random(height * 0.15, height * 0.75), 'wind', 1);
-            break;
-
-        case 'autumn':
-        case 'willow':
-            targetTint = { r: 200, g: 160, b: 80, a: 100 };
-            glowPulse = 40;
-            for (let i = 0; i < 60; i++)
-                addEffect(random(width), random(-80, -10), 'leaf', 1);
-            break;
-
         case 'star':
-            targetTint = { r: 10, g: 10, b: 35, a: 210 };
+            targetTint = darkTint;
             glowPulse = 60;
             for (let i = 0; i < 70; i++)
-                addEffect(random(width), random(20, height * 0.45), 'star', 1);
+                addEffect(random(width), random(20, height * 0.45), 'star', 1, pc);
             break;
 
         case 'dream':
         case 'wine':
-            targetTint = { r: 60, g: 30, b: 80, a: 170 };
+            targetTint = darkTint;
             glowPulse = 70;
             for (let i = 0; i < 50; i++)
-                addEffect(random(width), random(height), 'dream', 1);
+                addEffect(random(width), random(height), 'dream', 1, pc);
             break;
 
         case 'sword':
-            targetTint = { r: 40, g: 40, b: 50, a: 140 };
+            targetTint = midTint;
             glowPulse = 90;
             for (let i = 0; i < 12; i++)
-                addEffect(random(width * 0.15, width * 0.85), random(40, height * 0.35), 'sword', 1);
+                addEffect(random(width * 0.15, width * 0.85), random(40, height * 0.35), 'sword', 1, pc);
+            break;
+
+        case 'rain':
+            targetTint = midTint;
+            umbrella = 1;
+            glowPulse = 30;
+            for (let i = 0; i < 150; i++)
+                addEffect(random(width), random(-height,0), 'rain', 1, pc);
+            break;
+
+        case 'flower':
+        case 'spring':
+            targetTint = lightTint;
+            glowPulse = 50;
+            for (let i = 0; i < 80; i++)
+                addEffect(random(width), random(-120, -10), 'flower', 1, pc);
+            break;
+
+        case 'snow':
+            targetTint = lightTint;
+            glowPulse = 40;
+            for (let i = 0; i < 80; i++)
+                addEffect(random(width), random(-120, -10), 'snow', 1, pc);
+            break;
+
+        case 'wind':
+            targetTint = lightTint;
+            glowPulse = 35;
+            for (let i = 0; i < 60; i++)
+                addEffect(-50, random(height * 0.15, height * 0.75), 'wind', 1, pc);
+            break;
+
+        case 'autumn':
+        case 'willow':
+            targetTint = lightTint;
+            glowPulse = 40;
+            for (let i = 0; i < 60; i++)
+                addEffect(random(width), random(-80, -10), 'leaf', 1, pc);
             break;
 
         case 'water':
-            targetTint = { r: 100, g: 160, b: 200, a: 90 };
+            targetTint = lightTint;
             glowPulse = 45;
             for (let i = 0; i < 40; i++)
-                addEffect(random(width), riverY + random(-40, 40), 'bubble', 1);
+                addEffect(random(width), riverY + random(-40, 40), 'bubble', 1, pc);
             break;
 
         case 'bird':
-            targetTint = { r: 220, g: 200, b: 170, a: 70 };
+            targetTint = lightTint;
             glowPulse = 30;
             for (let i = 0; i < 15; i++)
-                addEffect(random(-80, 0), random(40, height * 0.4), 'bird', 1);
+                addEffect(random(-80, 0), random(40, height * 0.4), 'bird', 1, pc);
             break;
 
         case 'mountain':
-            targetTint = { r: 80, g: 100, b: 80, a: 80 };
+            targetTint = lightTint;
             glowPulse = 25;
             break;
 
         default:
-            // 未知特效也给淡染色
-            targetTint = { r: pc.r, g: pc.g, b: pc.b, a: 60 };
+            targetTint = lightTint;
             glowPulse = 30;
             break;
     }
 }
 
 
-function addEffect(x, y, type, count) {
+function addEffect(x, y, type, count, pc) {
+    // pc =诗词颜色 {r, g, b}，如果没传就用默认灰
+    if (!pc) pc = { r: 150, g: 150, b: 150 };
+
+    // 从诗词色派生：亮版和暗版
+    let bright = [min(pc.r + 40, 255), min(pc.g + 40, 255), min(pc.b + 40, 255)];
+    let soft= [
+        Math.round(pc.r * 0.7 + 80),
+        Math.round(pc.g * 0.7 + 80),
+        Math.round(pc.b * 0.7 + 80)
+    ];
+
     for (let i = 0; i < count; i++) {
         let p = {
             x: x + random(-10, 10),
@@ -747,7 +760,7 @@ function addEffect(x, y, type, count) {
             size: 16,
             rot: random(TWO_PI),
             char: '',
-            col: [150, 150, 150]
+            col: bright// ← 默认用诗词亮色
         };
 
         switch (type) {
@@ -757,20 +770,20 @@ function addEffect(x, y, type, count) {
                 p.life = 70; p.maxLife = 70;
                 p.char = '。';
                 p.size = random(10, 18);
-                p.col = [140, 170, 200];
+                p.col = soft;
                 break;
             case 'flower':
                 p.vy = random(0.6, 2.2);
                 p.vx = random(-1.5, 1.5);
                 p.char = random(['花', '瓣', '落', '飞', '红', '粉', '樱', '桃']);
-                p.col = [220, 100, 110];
+                p.col = bright;
                 p.size = random(16, 26);
                 break;
             case 'rain':
                 p.vy = random(6, 12);
                 p.vx = random(-0.8, 0.8);
                 p.char = '雨';
-                p.col = [100, 160, 200];
+                p.col = soft;
                 p.size = random(14, 22);
                 p.life = 240; p.maxLife = 240;
                 break;
@@ -778,27 +791,27 @@ function addEffect(x, y, type, count) {
                 p.vy = random(0.3, 1.6);
                 p.vx = random(-0.6, 0.6);
                 p.char = random(['雪', '霜', '冰', '寒', '白', '凝']);
-                p.col = [200, 210, 230];
+                p.col = bright;
                 p.size = random(14, 22);
                 break;
             case 'wind':
                 p.vx = random(4, 10);
                 p.vy = random(-0.8, 0.8);
                 p.char = random(['风', '吹', '飘', '动', '拂']);
-                p.col = [140, 170, 195];
+                p.col = soft;
                 p.size = random(16, 24);
                 break;
             case 'leaf':
                 p.vy = random(0.5, 2.0);
                 p.vx = random(-1.5, 1.5);
-                p.char = random(['叶', '落', '枫', '柳', '黄', '萧']);
-                p.col = [200, 150, 80];
+                p.char = random(['叶', '柳', '飘', '舞', '青', '绿']);
+                p.col = bright;
                 p.size = random(16, 24);
                 break;
             case 'star':
                 p.vy = 0; p.vx = 0;
                 p.char = random(['星', '辰', '光', '亮', '✦', '☆']);
-                p.col = [220, 210, 120];
+                p.col = bright;
                 p.size = random(14, 28);
                 p.life = 280; p.maxLife = 280;
                 break;
@@ -806,14 +819,14 @@ function addEffect(x, y, type, count) {
                 p.vy = random(-0.8, 0.8);
                 p.vx = random(-0.8, 0.8);
                 p.char = random(['梦', '幻', '蝶', '影', '迷', '醉', '烟']);
-                p.col = [180, 140, 220];
+                p.col = bright;
                 p.size = random(16, 28);
                 break;
             case 'sword':
                 p.vy = random(3, 8);
                 p.vx = random(-1.5, 1.5);
                 p.char = random(['剑', '刃', '锋', '斩', '戈']);
-                p.col = [190, 195, 210];
+                p.col = bright;
                 p.size = random(20, 30);
                 p.life = 90; p.maxLife = 90;
                 break;
@@ -821,7 +834,7 @@ function addEffect(x, y, type, count) {
                 p.vx = random(2, 6);
                 p.vy = random(-1.2, 0.5);
                 p.char = random(['鸟', '雀', '鸣', '飞', '翔', '燕']);
-                p.col = [140, 120, 90];
+                p.col = soft;
                 p.size = random(16, 24);
                 break;
         }
@@ -830,30 +843,32 @@ function addEffect(x, y, type, count) {
 }
 
 function updateEffects() {
-    // 持续补充粒子
-    if (activeEffect ==='rain' && frameCount % 2 === 0)
-        addEffect(random(width), -10, 'rain', 4);
+    // 持续补充粒子 —— 用当前特效的强调色
+    let ac = effectAccent;
+
+    if (activeEffect === 'rain' && frameCount % 2 === 0)
+        addEffect(random(width), -10, 'rain', 4, ac);
     if (activeEffect === 'snow' && frameCount % 4 === 0)
-        addEffect(random(width), -10, 'snow', 2);
+        addEffect(random(width), -10, 'snow', 2, ac);
     if ((activeEffect === 'flower' || activeEffect === 'spring') && frameCount % 6 === 0)
-        addEffect(random(width), -10, 'flower', 2);
+        addEffect(random(width), -10, 'flower', 2, ac);
     if (activeEffect === 'wind' && frameCount % 3 === 0)
-        addEffect(-50, random(height * 0.15, height * 0.75), 'wind', 1);
+        addEffect(-50, random(height * 0.15, height * 0.75), 'wind', 1, ac);
     if (activeEffect === 'bird' && frameCount % 12 === 0)
-        addEffect(-50, random(50, height * 0.4), 'bird', 1);
+        addEffect(-50, random(50, height * 0.4), 'bird', 1, ac);
     if (activeEffect === 'star' && frameCount % 20 === 0)
-        addEffect(random(width), random(20, height * 0.45), 'star', 1);
+        addEffect(random(width), random(20, height * 0.45), 'star', 1, ac);
     if ((activeEffect === 'dream' || activeEffect === 'wine') && frameCount % 8 === 0)
-        addEffect(random(width), random(height), 'dream', 1);
+        addEffect(random(width), random(height), 'dream', 1, ac);
     if ((activeEffect === 'autumn' || activeEffect === 'willow') && frameCount % 8 === 0)
-        addEffect(random(width), -10, 'leaf', 1);
+        addEffect(random(width), -10, 'leaf', 1, ac);
 
     for (let i = effects.length - 1; i >= 0; i--) {
         let e = effects[i];
         e.x += e.vx;
         e.y += e.vy;
         if (e.type === 'leaf' || e.type === 'flower') e.rot += 0.02;
-        if (e.type === 'snow') e.x += sin(frameCount * 0.02 + i) * 0.4;
+        if (e.type === 'snow') e.x += sin(frameCount * 0.02+ i) * 0.4;
         if (e.type === 'dream') {
             e.x += sin(frameCount * 0.015 + i * 0.3) * 0.5;
             e.y += cos(frameCount * 0.012 + i * 0.4) * 0.3;
